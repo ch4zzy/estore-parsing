@@ -4,16 +4,20 @@ from bs4 import BeautifulSoup as bs
 import json
 from dataclasses import asdict
 from enum import Enum
+from datetime import datetime
+from config import DATA_PATH, URL
+from typing import Iterator, List
 
 
-def load_json(categories: list) -> None:
+def load_categories_to_json(categories: list) -> str:
+    file_name = 'categories.json'
     categories_dict = [asdict(category) for category in categories]
-    with open('categories.json', 'w', encoding='utf-8') as file:
+    with open(f'{DATA_PATH}{file_name}', 'w', encoding='utf-8') as file:
         json.dump(categories_dict, file, ensure_ascii=False, indent=4)
-    return None
+    return file_name
 
 
-def parse_category(url: str) -> list:
+def parse_categories(url: str) -> list:
     result = requests.get(url)
     soup = bs(result.text, 'lxml')
     categories = []
@@ -22,14 +26,15 @@ def parse_category(url: str) -> list:
         class_='nav-item level0 nav-1 level-top first nav-item--parent classic nav-item--only-subcategories parent'):
         category_name = category.find('span').text
         category_link = category.find('a', class_='level-top').get('href')
-        if category_link != "https://estore.ua/#":
+        if category_link != URL + "#":
             categories.append(Category(name=category_name, link=category_link))
         else:
             result = requests.get(url + '#')
             soup = bs(result.text, 'lxml')
+            print("Breakpoint", soup)
             for category in soup.find_all(
                 'li', 
-                class_='nav-item level1 nav-12-2 first nav-item--parent classic nav-item--only-subcategories parent'):
+                class_='nav-item level1 nav-12-2 last nav-item--parent classic nav-item--only-subcategories parent'):
                 category_name = category.find('a').text
                 category_link = category.find('a').get('href')
                 categories.append(Category(name=category_name, link=category_link))
@@ -59,25 +64,20 @@ def parse_max_page_number_from_category(category_link: str) -> list:
     return pages_count     
 
 
-#categories = parse_category("https://estore.ua/")
-#load_json(categories)
-
-def parse_pages(categories_file):
+def write_max_pages_number_to_json(categories_file: json) -> None:
     with open(categories_file, 'r', encoding='utf-8') as file:
         categories = json.load(file)
         
     for category in categories:
         page_number = parse_max_page_number_from_category(category['link'])
-        category['page_count'] = page_number  # Добавляем поле с количеством страниц
+        category['page_count'] = page_number  
 
     with open(categories_file, 'w', encoding='utf-8') as file:
         json.dump(categories, file, ensure_ascii=False, indent=4)
-
-            
-#parse_pages('categories.json')
+    return None
 
 
-def parse_products_from_category(category_params: dict) -> list:
+def parse_products_from_category(category_params: dict) -> Iterator[List]:
     link = category_params["link"]
     pages_count = category_params["page_count"]
     status_translate = {
@@ -85,7 +85,6 @@ def parse_products_from_category(category_params: dict) -> list:
         "Нет в наличии": "Not available",
         "Заканчивается": "Expires"
     }
-    products = []
     
     for page in range(1, pages_count + 1):
         result = requests.get(f"{link}page={page}/")
@@ -135,8 +134,7 @@ def parse_products_from_category(category_params: dict) -> list:
 
             product_link = url
 
-            products.append(
-                Product(
+            yield Product(
                     _id=product_id,
                     name=product_name,
                     category=product_category,
@@ -145,28 +143,19 @@ def parse_products_from_category(category_params: dict) -> list:
                     available_status=product_status,
                     link=product_link
                 )
-            )
-            print(f"Product {product_name} parsed")
-    return products
     
-def parse_categories(categories_file: str) -> list:
+
+def parse_all_products_from_categories(categories_file: str) -> Iterator[List]:
     with open(categories_file, 'r', encoding='utf-8') as file:
         categories = json.load(file)
-    result = []
+
     for item in categories:
-        products = parse_products_from_category(item)
-        result.extend(products)
-    return result
+        yield from parse_products_from_category(item)
 
 
-products = parse_categories('categories.json')
-
-
-from datetime import datetime
-def load_products_to_json(products: list) -> None:
+def load_products_to_json(products: Iterator[Product]) -> None:
+    file_name = f"Snapshot-{datetime.now()}.json"
     products_dict = [asdict(product) for product in products]
-    with open(f'Snapshot-{datetime.now()}.json', 'w', encoding='utf-8') as file:
+    with open(f'{DATA_PATH}{file_name}', 'w', encoding='utf-8') as file:
         json.dump(products_dict, file, ensure_ascii=False, indent=4)
-    return None
-
-load_products_to_json(products)
+    return file_name
