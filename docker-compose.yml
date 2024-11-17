@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    volumes:
+      - ./app:/usr/src/app
+
+  celery_worker:
+    build: .
+    command: celery -A app.tasks worker --concurrency=4 --loglevel=info
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"

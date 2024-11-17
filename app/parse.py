@@ -1,11 +1,10 @@
-from models import Product, Category
+from app.models import Product, Category
 import requests
 from bs4 import BeautifulSoup as bs
 import json
 from dataclasses import asdict
-from enum import Enum
 from datetime import datetime
-from config import DATA_PATH, URL
+from app.config import DATA_PATH, URL
 from typing import Iterator, List
 
 
@@ -31,7 +30,6 @@ def parse_categories(url: str) -> list:
         else:
             result = requests.get(url + '#')
             soup = bs(result.text, 'lxml')
-            print("Breakpoint", soup)
             for category in soup.find_all(
                 'li', 
                 class_='nav-item level1 nav-12-2 last nav-item--parent classic nav-item--only-subcategories parent'):

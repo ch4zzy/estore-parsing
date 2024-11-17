@@ -1,0 +1,67 @@
+[
+    {
+        "name": "iPhone",
+        "link": "https://estore.ua/smartfony/manufacturer:apple/",
+        "page_count": 43
+    },
+    {
+        "name": "MacBook",
+        "link": "https://estore.ua/noutbuki/manufacturer:apple/",
+        "page_count": 40
+    },
+    {
+        "name": "AirPods",
+        "link": "https://estore.ua/naushniki/airpods/",
+        "page_count": 3
+    },
+    {
+        "name": "Apple Watch",
+        "link": "https://estore.ua/smart-chasy/manufacturer:apple/",
+        "page_count": 21
+    },
+    {
+        "name": "iPad",
+        "link": "https://estore.ua/planshety/manufacturer:apple/",
+        "page_count": 16
+    },
+    {
+        "name": "PlayStation, Xbox",
+        "link": "https://estore.ua/igrovye-konsoli-i-pristavki/",
+        "page_count": 9
+    },
+    {
+        "name": "Зарядные станции",
+        "link": "https://estore.ua/aksessuary/zaryadnie-stantsii/",
+        "page_count": 8
+    },
+    {
+        "name": "DJI",
+        "link": "https://estore.ua/gadzhety/dji/",
+        "page_count": 10
+    },
+    {
+        "name": "Dyson",
+        "link": "https://estore.ua/gadzhety/dyson/",
+        "page_count": 15
+    },
+    {
+        "name": "Samsung",
+        "link": "https://estore.ua/smartfony/manufacturer:samsung/",
+        "page_count": 45
+    },
+    {
+        "name": "Гаджеты",
+        "link": "https://estore.ua/gadzhety/",
+        "page_count": 49
+    },
+    {
+        "name": "Наушники ",
+        "link": "https://estore.ua/naushniki/",
+        "page_count": 17
+    },
+    {
+        "name": "Аксессуары",
+        "link": "https://estore.ua/aksessuary/",
+        "page_count": 149
+    }
+]
