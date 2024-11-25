@@ -62,10 +62,9 @@ def update_db_create_report(products: json, client) -> None:
 
     with open(DATA_PATH + products, "r") as file:
         data = json.load(file)
-
+    print("DB started updating")
     for item in data:
         existing_product = client.find_one({"_id": item["_id"]})
-        print(existing_product)
         if not existing_product:
             report_lines.append(f"Product {item['_id']} was first time added")
             client.insert_one(item)
@@ -79,6 +78,7 @@ def update_db_create_report(products: json, client) -> None:
             if existing_product["available_status"] != item["available_status"]:
                 report_lines.append(f"Product {item['_id']} available_status was updated")
                 client.update_one({"_id": item["_id"]}, {"$set": {"available_status": item["available_status"]}})
+    print("DB updated")
     print("Report:", report_lines)
     if report_lines:
         with open(f"{DATA_PATH}{datetime.now()}.txt", "a") as file:

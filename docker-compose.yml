@@ -15,7 +15,7 @@ services:
 
   celery_worker:
     build: .
-    command: celery -A app.tasks worker --concurrency=4 --loglevel=info
+    command: celery -A app.tasks worker --concurrency=1 --loglevel=info
     volumes:
       - .:/code
     depends_on:
